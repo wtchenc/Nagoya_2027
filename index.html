@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2027 名古屋之旅手帳</title>
+    
+    <!-- Google Fonts: Zen Maru Gothic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        journal: {
+                            bg: '#fcf9f2',      // 米黃紙張底色
+                            card: '#ffffff',    // 純白紙張
+                            ink: '#594a4e',     // 深褐墨水色
+                            brown: '#a68a80',   // 淺棕色
+                            accent: '#d48872',  // 強調色 (櫻花色)
+                            blue: '#8db5be',    // 輔助色1
+                            green: '#9eb896',   // 輔助色2
+                            line: '#e0d8cc'     // 線條色
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Zen Maru Gothic"', '"Noto Sans TC"', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'paper-texture': "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmNmOWYyIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNlN2U0ZGMiLz4KPC9zdmc+')",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: #fcf9f2;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmNmOWYyIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNlN2U0ZGMiLz4KPC9zdmc+'); /* Subtle noise texture */
+            color: #594a4e;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Hide scrollbar for clean look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .day-plan-block {
+            scroll-margin-top: 180px; /* CSS Scroll snap offset for sticky headers */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-item.active {
+            color: #d48872;
+            font-weight: bold;
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+            transition: transform 0.2s;
+        }
+
+        /* Map Container */
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+            filter: sepia(20%) contrast(90%);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(89, 74, 78, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        /* Custom Checkbox */
+        .custom-checkbox input:checked + div {
+            background-color: #9eb896;
+            border-color: #9eb896;
+        }
+        .custom-checkbox input:checked + div:after {
+            content: '✔';
+            color: white;
+            font-size: 12px;
+            display: block;
+            text-align: center;
+            line-height: 16px;
+        }
+
+        summary::marker {
+            color: #d48872;
+        }
+    </style>
+</head>
+<body class="bg-journal-bg text-journal-ink pb-24 min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-journal-bg/95 backdrop-blur-sm border-b border-journal-line shadow-sm transition-all duration-300">
+        <div class="max-w-md md:max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold tracking-wider text-journal-ink">
+                    <i class="fa-solid fa-plane-departure text-journal-accent mr-2"></i>名古屋之旅
+                </h1>
+                <p class="text-xs text-journal-brown mt-0.5">2027.01.23 - 01.31 (9天8夜)</p>
+            </div>
+            <div class="text-right">
+                <span class="bg-journal-green/20 text-journal-green px-2 py-1 rounded-lg text-xs font-bold">
+                    4大4小
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-md md:max-w-4xl mx-auto px-4 py-4">
+
+        <!-- TAB: PLAN (行程) -->
+        <div id="tab-plan" class="tab-content active">
+            
+            <!-- Date Navigation (Sticky) -->
+            <div class="sticky top-[68px] z-30 bg-journal-bg/95 backdrop-blur pt-2 pb-3 -mx-4 px-4 border-b border-journal-line/50 mb-4">
+                <div class="flex overflow-x-auto space-x-3 no-scrollbar py-1 pr-4 md:justify-center" id="plan-date-nav">
+                    <!-- Day 1 -->
+                    <button onclick="switchDay(0, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-journal-ink text-white shadow-md flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 1</span>
+                        <span class="text-lg font-bold leading-none my-0.5">23</span>
+                        <span class="text-[10px]">六</span>
+                    </button>
+                    <!-- Day 2 -->
+                    <button onclick="switchDay(1, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 2</span>
+                        <span class="text-lg font-bold leading-none my-0.5">24</span>
+                        <span class="text-[10px]">日</span>
+                    </button>
+                    <!-- Day 3 -->
+                    <button onclick="switchDay(2, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 3</span>
+                        <span class="text-lg font-bold leading-none my-0.5">25</span>
+                        <span class="text-[10px]">一</span>
+                    </button>
+                    <!-- Day 4 -->
+                    <button onclick="switchDay(3, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 4</span>
+                        <span class="text-lg font-bold leading-none my-0.5">26</span>
+                        <span class="text-[10px]">二</span>
+                    </button>
+                    <!-- Day 5 -->
+                    <button onclick="switchDay(4, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 5</span>
+                        <span class="text-lg font-bold leading-none my-0.5">27</span>
+                        <span class="text-[10px]">三</span>
+                    </button>
+                    <!-- Day 6 -->
+                    <button onclick="switchDay(5, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 6</span>
+                        <span class="text-lg font-bold leading-none my-0.5">28</span>
+                        <span class="text-[10px]">四</span>
+                    </button>
+                    <!-- Day 7 -->
+                    <button onclick="switchDay(6, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 7</span>
+                        <span class="text-lg font-bold leading-none my-0.5">29</span>
+                        <span class="text-[10px]">五</span>
+                    </button>
+                    <!-- Day 8 -->
+                    <button onclick="switchDay(7, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 8</span>
+                        <span class="text-lg font-bold leading-none my-0.5">30</span>
+                        <span class="text-[10px]">六</span>
+                    </button>
+                    <!-- Day 9 -->
+                    <button onclick="switchDay(8, this)" class="day-nav-btn flex-shrink-0 w-14 h-16 rounded-xl border border-journal-line bg-white text-journal-brown flex flex-col items-center justify-center transition-all transform active:scale-95 cursor-pointer hover:shadow-lg">
+                        <span class="text-[10px] opacity-80">Day 9</span>
+                        <span class="text-lg font-bold leading-none my-0.5">31</span>
+                        <span class="text-[10px]">日</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-6 relative min-h-[50vh] pb-8">
+                <!-- Timeline decorative line -->
+                <div class="absolute left-9 top-6 bottom-0 w-0.5 bg-journal-line/50 border-l border-dashed border-journal-brown/30 z-0 md:left-[50%] md:hidden"></div>
+
+                <!-- Day 1 -->
+                <div id="day-content-0" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-accent/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-accent text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D1</span>
+                            <span>抵達名古屋</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">感受城市氛圍</p>
+                        
+                        <!-- Desktop Layout: Flex Row -->
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2 md:border-l-2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-brown rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">14:00</span>
+                                    <span class="text-journal-ink block">抵達/市區飯店 Check-in</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-brown rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">15:30</span>
+                                    <span class="text-journal-ink block">JR Gate Tower 星巴克 <span class="text-xs text-journal-brown block">(全日本最高)</span></span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-brown rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">17:00</span>
+                                    <span class="text-journal-ink block">ÉCHIRÉ 艾許奶油 <span class="text-xs text-journal-brown block">(高島屋)</span></span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-brown rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">19:00</span>
+                                    <span class="text-journal-ink block">名古屋車站周邊晚餐</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(0)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Nagoya+Station&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 2 -->
+                <div id="day-content-1" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-blue/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-blue text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D2</span>
+                            <span>寶可夢大師之旅</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">市區巡禮</p>
+                        
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">10:00</span>
+                                    <span class="text-journal-ink block">Pokemon Center Nagoya <span class="text-xs text-journal-brown block">(松坂屋)</span></span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">13:00</span>
+                                    <span class="text-journal-ink block">矢場丼味噌豬排</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">15:00</span>
+                                    <span class="text-journal-ink block">榮商圈 / Oasis 21 散步</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">18:00</span>
+                                    <span class="text-journal-ink block">市區自由活動</span>
+                                </div>
+                            </div>
+                            <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(1)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Pokemon+Center+Nagoya&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div id="day-content-2" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-green/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-green text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D3</span>
+                            <span>犬山城下町散策</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">國寶名城</p>
+                        
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-green rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-green text-sm font-bold block mb-1">09:30</span>
+                                    <span class="text-journal-ink block">搭乘名鐵前往犬山</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-green rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-green text-sm font-bold block mb-1">10:30</span>
+                                    <span class="text-journal-ink block">犬山城 (國寶) & 三光稻荷神社</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-green rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-green text-sm font-bold block mb-1">12:30</span>
+                                    <span class="text-journal-ink block">城下町吃飛驒牛壽司/糰子</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-green rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-green text-sm font-bold block mb-1">16:00</span>
+                                    <span class="text-journal-ink block">返回名古屋市區逛街</span>
+                                </div>
+                            </div>
+                            <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(2)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Inuyama+Castle&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 4 -->
+                <div id="day-content-3" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-ink/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-ink text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D4</span>
+                            <span>自駕出發 · 桑名燈海</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">租車自駕</p>
+                        
+                        <div class="p-3 mb-4 bg-journal-bg border border-journal-line rounded text-xs text-journal-accent">
+                            <i class="fa-solid fa-key mr-1"></i> 取車日：記得帶台灣駕照+日文譯本
+                        </div>
+
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">09:00</span>
+                                    <span class="text-journal-ink block">租車出發</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">10:30</span>
+                                    <span class="text-journal-ink block">六華苑 (洋館建築)</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">13:00</span>
+                                    <span class="text-journal-ink block">桑名城跡 (九華公園)</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">16:00</span>
+                                    <span class="text-journal-ink block">名花之里 <span class="text-xs text-journal-brown block">(燈海/溫室/足湯)</span></span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">21:00</span>
+                                    <span class="text-journal-ink block">宿：桑名</span>
+                                </div>
+                            </div>
+                            <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(3)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Nabana+No+Sato&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 5 -->
+                <div id="day-content-4" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-blue/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-blue text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D5</span>
+                            <span>御在所賞雪 · 鈴鹿</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">雪白世界</p>
+                        
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">09:30</span>
+                                    <span class="text-journal-ink block">御在所纜車 <span class="text-xs text-journal-brown block">(山上玩雪/樹冰)</span></span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">14:00</span>
+                                    <span class="text-journal-ink block">椿大神社 (祈求交通安全)</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">16:30</span>
+                                    <span class="text-journal-ink block">鈴鹿 AEON Mall 購物晚餐</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">20:00</span>
+                                    <span class="text-journal-ink block">宿：鈴鹿</span>
+                                </div>
+                            </div>
+                            <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(4)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Gozaisho+Ropeway&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 6 -->
+                <div id="day-content-5" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-accent/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-accent text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D6</span>
+                            <span>鈴鹿賽道樂園</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">親子放電</p>
+                        
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-accent rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">10:00</span>
+                                    <span class="text-journal-ink block">鈴鹿賽道樂園 (Motopia)</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-accent rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">13:00</span>
+                                    <span class="text-journal-ink block">園區午餐</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-accent rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">17:00</span>
+                                    <span class="text-journal-ink block">鈴鹿 AEON Mall (補貨)</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-accent rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">20:00</span>
+                                    <span class="text-journal-ink block">宿：鈴鹿</span>
+                                </div>
+                            </div>
+                            <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(5)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Suzuka+Circuit&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 7 -->
+                <div id="day-content-6" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-blue/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-blue text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D7</span>
+                            <span>Outlet 血拚 · 返回市區</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">購物行程</p>
+                        
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">09:30</span>
+                                    <span class="text-journal-ink block">鈴鹿水邊公園/水獺相關景點</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">13:00</span>
+                                    <span class="text-journal-ink block">三井 Outlet Park 爵士之夢長島</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">18:00</span>
+                                    <span class="text-journal-ink block">返回名古屋市區還車</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-blue rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-blue text-sm font-bold block mb-1">20:00</span>
+                                    <span class="text-journal-ink block">宿：名古屋市區</span>
+                                </div>
+                            </div>
+                            <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(6)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Jazz+Dream+Nagashima&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 8 -->
+                <div id="day-content-7" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-accent/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-accent text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D8</span>
+                            <span>最後採買日</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">自由活動</p>
+                        
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-accent rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">全日</span>
+                                    <span class="text-journal-ink block">名古屋市區逛街購物</span>
+                                    <span class="text-xs text-journal-brown block mt-1">(榮、大須商店街、名古屋站周邊)</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-accent rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">19:00</span>
+                                    <span class="text-journal-ink block">慶功宴晚餐</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-accent rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-accent text-sm font-bold block mb-1">21:00</span>
+                                    <span class="text-journal-ink block">打包行李</span>
+                                </div>
+                            </div>
+                             <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(7)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Sakae+Nagoya&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 9 -->
+                <div id="day-content-8" class="day-plan-block relative z-10">
+                    <div class="bg-journal-card p-5 rounded-xl shadow-sm border border-journal-line relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-journal-ink/5 rounded-bl-[5rem] -mr-6 -mt-6"></div>
+                        <h3 class="font-bold text-xl mb-1 flex items-center text-journal-ink">
+                            <span class="bg-journal-ink text-white w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3 shadow-sm font-bold">D9</span>
+                            <span>回程</span>
+                        </h3>
+                        <p class="text-sm text-journal-brown mb-6 ml-11">平安返台</p>
+                        
+                        <div class="md:flex md:space-x-8 md:items-start">
+                            <div class="space-y-6 ml-3 relative border-l-2 border-journal-line/30 pl-8 py-2 md:w-1/2">
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">上午</span>
+                                    <span class="text-journal-ink block">前往中部國際機場</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">--:--</span>
+                                    <span class="text-journal-ink block">逛機場 Flight of Dreams</span>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute -left-[39px] top-1.5 w-3 h-3 bg-journal-ink rounded-full ring-4 ring-journal-bg"></div>
+                                    <span class="font-mono text-journal-ink text-sm font-bold block mb-1">--:--</span>
+                                    <span class="text-journal-ink block">搭機返台</span>
+                                </div>
+                            </div>
+                             <!-- Map Button Area -->
+                            <div class="mt-4 md:mt-0 md:w-1/2">
+                                <div onclick="openMapModal(8)" class="cursor-pointer group h-full">
+                                    <div class="h-32 bg-gray-100 rounded-t-lg map-container opacity-60 group-hover:opacity-80 transition-opacity">
+                                        <iframe src="https://maps.google.com/maps?q=Chubu+Centrair+International+Airport&output=embed" loading="lazy" class="pointer-events-none"></iframe>
+                                    </div>
+                                    <div class="bg-journal-blue/10 border-t border-journal-blue/30 p-3 rounded-b-lg text-center text-journal-blue font-bold group-hover:bg-journal-blue group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i>查看當日路線地圖
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="h-8 text-center text-xs text-journal-brown/50 mt-8">旅途愉快 Have a nice trip</div>
+        </div>
+
+        <!-- TAB: GUIDE (景點) -->
+        <div id="tab-guide" class="tab-content">
+            <h2 class="text-xl font-bold mb-4 text-journal-ink border-b-2 border-journal-accent pb-2 inline-block">景點資訊 Guide</h2>
+            <!-- Changed to Grid on Desktop -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                
+                <details class="group bg-journal-card rounded-xl border border-journal-line shadow-sm overflow-hidden h-fit">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer list-none bg-journal-card hover:bg-journal-bg transition-colors">
+                        <span class="font-bold">名花之里 (Nabana no Sato)</span>
+                        <span class="transition group-open:rotate-180">
+                            <i class="fa-solid fa-chevron-down text-journal-accent"></i>
+                        </span>
+                    </summary>
+                    <div class="p-4 pt-0 text-sm border-t border-dashed border-journal-line bg-journal-bg/30">
+                        <p class="mb-2 mt-2"><span class="font-bold text-journal-brown">特色：</span> 日本最大級燈海、溫室花園、園內有啤酒園餐廳與足湯。</p>
+                        <p class="mb-2"><span class="font-bold text-journal-brown">營業：</span> 10:00 - 21:00 (依季節變動)</p>
+                        <p class="text-xs text-journal-brown">*建議傍晚前抵達，可同時看白天的花與晚上的燈。</p>
+                    </div>
+                </details>
+
+                <details class="group bg-journal-card rounded-xl border border-journal-line shadow-sm overflow-hidden h-fit">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer list-none bg-journal-card hover:bg-journal-bg transition-colors">
+                        <span class="font-bold">御在所纜車 (Gozaisho)</span>
+                        <span class="transition group-open:rotate-180">
+                            <i class="fa-solid fa-chevron-down text-journal-accent"></i>
+                        </span>
+                    </summary>
+                    <div class="p-4 pt-0 text-sm border-t border-dashed border-journal-line bg-journal-bg/30">
+                        <p class="mb-2 mt-2"><span class="font-bold text-journal-brown">特色：</span> 冬季可賞樹冰、玩雪盆。景色壯觀。</p>
+                        <p class="mb-2"><span class="font-bold text-journal-brown">營業：</span> 9:00 - 16:00 (下山末班 16:20)</p>
+                        <p class="text-xs text-journal-brown">*山上非常冷，務必穿著保暖防水衣物。</p>
+                    </div>
+                </details>
+
+                <details class="group bg-journal-card rounded-xl border border-journal-line shadow-sm overflow-hidden h-fit">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer list-none bg-journal-card hover:bg-journal-bg transition-colors">
+                        <span class="font-bold">鈴鹿賽道樂園 (Motopia)</span>
+                        <span class="transition group-open:rotate-180">
+                            <i class="fa-solid fa-chevron-down text-journal-accent"></i>
+                        </span>
+                    </summary>
+                    <div class="p-4 pt-0 text-sm border-t border-dashed border-journal-line bg-journal-bg/30">
+                        <p class="mb-2 mt-2"><span class="font-bold text-journal-brown">特色：</span> 以賽車為主題，多數設施幼童可由大人陪同自行操作，非常適合親子。</p>
+                        <p class="mb-2"><span class="font-bold text-journal-brown">營業：</span> 10:00 - 17:00 (平日/假日不同)</p>
+                        <p class="text-xs text-journal-brown">*建議購買 Passport 暢玩券。</p>
+                    </div>
+                </details>
+                
+                 <details class="group bg-journal-card rounded-xl border border-journal-line shadow-sm overflow-hidden h-fit">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer list-none bg-journal-card hover:bg-journal-bg transition-colors">
+                        <span class="font-bold">六華苑 (Rokkaen)</span>
+                        <span class="transition group-open:rotate-180">
+                            <i class="fa-solid fa-chevron-down text-journal-accent"></i>
+                        </span>
+                    </summary>
+                    <div class="p-4 pt-0 text-sm border-t border-dashed border-journal-line bg-journal-bg/30">
+                        <p class="mb-2 mt-2"><span class="font-bold text-journal-brown">特色：</span> 鹿鳴館建築師設計的洋館與和館，庭園優美，電影取景地。</p>
+                        <p class="mb-2"><span class="font-bold text-journal-brown">營業：</span> 9:00 - 17:00 (週一休)</p>
+                    </div>
+                </details>
+
+                <details class="group bg-journal-card rounded-xl border border-journal-line shadow-sm overflow-hidden h-fit">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer list-none bg-journal-card hover:bg-journal-bg transition-colors">
+                        <span class="font-bold">Pokemon Center Nagoya</span>
+                        <span class="transition group-open:rotate-180">
+                            <i class="fa-solid fa-chevron-down text-journal-accent"></i>
+                        </span>
+                    </summary>
+                    <div class="p-4 pt-0 text-sm border-t border-dashed border-journal-line bg-journal-bg/30">
+                        <p class="mb-2 mt-2"><span class="font-bold text-journal-brown">位置：</span> 松坂屋名古屋店 本館5F</p>
+                        <p class="mb-2"><span class="font-bold text-journal-brown">營業：</span> 10:00 - 19:00</p>
+                        <p class="text-xs text-journal-brown">*假日人潮多，建議開門即前往。</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- TAB: SHOPS (好店) -->
+        <div id="tab-shops" class="tab-content">
+            <h2 class="text-xl font-bold mb-4 text-journal-ink border-b-2 border-journal-green pb-2 inline-block">好店清單 Shops</h2>
+            
+            <div class="mb-2 text-xs font-bold text-journal-brown uppercase tracking-widest">Gourmet 美食</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                <div class="bg-journal-card p-4 rounded-xl border border-journal-line shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-journal-ink">ÉCHIRÉ 艾許奶油</h4>
+                            <p class="text-xs text-journal-brown">JR名古屋高島屋 1F</p>
+                        </div>
+                        <span class="bg-journal-accent/10 text-journal-accent text-xs px-2 py-1 rounded">必買</span>
+                    </div>
+                    <p class="text-sm mt-2 text-gray-600">法國頂級奶油甜點，推薦費南雪與奶油餅乾。</p>
+                </div>
+
+                <div class="bg-journal-card p-4 rounded-xl border border-journal-line shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-journal-ink">矢場丼 (矢場とん)</h4>
+                            <p class="text-xs text-journal-brown">名古屋各處皆有分店</p>
+                        </div>
+                        <span class="bg-journal-brown/10 text-journal-brown text-xs px-2 py-1 rounded">名物</span>
+                    </div>
+                    <p class="text-sm mt-2 text-gray-600">名古屋必吃味噌豬排，醬汁濃郁，建議點鐵板系列。</p>
+                </div>
+                
+                 <div class="bg-journal-card p-4 rounded-xl border border-journal-line shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-journal-ink">犬山城下町美食</h4>
+                            <p class="text-xs text-journal-brown">犬山</p>
+                        </div>
+                    </div>
+                    <p class="text-sm mt-2 text-gray-600">飛驒牛握壽司、五平餅、水果糰子 (恋小町団子)。</p>
+                </div>
+            </div>
+
+            <div class="mb-2 text-xs font-bold text-journal-brown uppercase tracking-widest">Shopping 購物</div>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="bg-journal-card p-4 rounded-xl border border-journal-line shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-journal-ink">鈴鹿 AEON Mall</h4>
+                            <p class="text-xs text-journal-brown">Suzuka</p>
+                        </div>
+                        <span class="bg-journal-blue/10 text-journal-blue text-xs px-2 py-1 rounded">大型</span>
+                    </div>
+                    <p class="text-sm mt-2 text-gray-600">大型購物中心，超市、藥妝、服飾一應俱全，停車方便。</p>
+                </div>
+                <div class="bg-journal-card p-4 rounded-xl border border-journal-line shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-journal-ink">三井 Outlet 爵士之夢長島</h4>
+                            <p class="text-xs text-journal-brown">Kuwana</p>
+                        </div>
+                        <span class="bg-journal-blue/10 text-journal-blue text-xs px-2 py-1 rounded">超大</span>
+                    </div>
+                    <p class="text-sm mt-2 text-gray-600">店鋪數日本最大級，國際精品與運動品牌非常齊全。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: INFO (資訊) -->
+        <div id="tab-info" class="tab-content">
+            <h2 class="text-xl font-bold mb-4 text-journal-ink border-b-2 border-journal-blue pb-2 inline-block">旅途資訊 Info</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Flight Card -->
+                <div class="bg-white p-5 rounded-xl border border-journal-line shadow-sm relative overflow-hidden h-fit">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-journal-blue/10 rounded-bl-full"></div>
+                    <h3 class="font-bold text-journal-ink mb-3"><i class="fa-solid fa-plane text-journal-blue mr-2"></i>航班資訊</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-xs text-journal-brown">去程 (1/23)</p>
+                            <p class="font-mono font-bold">TPE - NGO</p>
+                            <p class="text-xs text-gray-500">航班號待填</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-journal-brown">回程 (1/31)</p>
+                            <p class="font-mono font-bold">NGO - TPE</p>
+                            <p class="text-xs text-gray-500">航班號待填</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotel Card -->
+                <div class="bg-white p-5 rounded-xl border border-journal-line shadow-sm relative overflow-hidden h-fit row-span-2">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-journal-accent/10 rounded-bl-full"></div>
+                    <h3 class="font-bold text-journal-ink mb-3"><i class="fa-solid fa-bed text-journal-accent mr-2"></i>住宿安排</h3>
+                    <ul class="text-sm space-y-3">
+                        <li class="flex border-b border-dashed border-journal-line pb-2">
+                            <span class="w-20 font-bold text-journal-brown">Day 1-3</span>
+                            <span>名古屋市區飯店 (待確認)</span>
+                        </li>
+                        <li class="flex border-b border-dashed border-journal-line pb-2">
+                            <span class="w-20 font-bold text-journal-brown">Day 4</span>
+                            <span>桑名/名花之里周邊</span>
+                        </li>
+                        <li class="flex border-b border-dashed border-journal-line pb-2">
+                            <span class="w-20 font-bold text-journal-brown">Day 5-6</span>
+                            <span>鈴鹿周邊飯店</span>
+                        </li>
+                        <li class="flex">
+                            <span class="w-20 font-bold text-journal-brown">Day 7-8</span>
+                            <span>名古屋市區飯店</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Car Rental -->
+                <div class="bg-white p-5 rounded-xl border border-journal-line shadow-sm relative overflow-hidden h-fit">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-journal-green/10 rounded-bl-full"></div>
+                    <h3 class="font-bold text-journal-ink mb-3"><i class="fa-solid fa-car text-journal-green mr-2"></i>租車資訊</h3>
+                    <div class="text-sm">
+                        <p class="mb-1"><span class="text-journal-brown font-bold">取車：</span> 1/26 名古屋市區</p>
+                        <p class="mb-1"><span class="text-journal-brown font-bold">還車：</span> 1/29 名古屋市區</p>
+                        <p class="mt-2 text-xs bg-gray-100 p-2 rounded text-gray-600">
+                            *請確認車型可容納 4大4小 及行李 (建議 Hiace 或 2台車)。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: TAXI (車資) -->
+        <div id="tab-taxi" class="tab-content">
+            <h2 class="text-xl font-bold mb-4 text-journal-ink border-b-2 border-journal-brown pb-2 inline-block">車資估算 Taxi</h2>
+            
+            <div class="bg-journal-card p-6 rounded-xl border border-journal-line shadow-sm max-w-lg mx-auto md:max-w-full">
+                <div class="md:flex md:space-x-8">
+                    <div class="md:w-1/2">
+                        <div class="mb-4">
+                            <label class="block text-sm font-bold text-journal-brown mb-2">預估距離 (公里)</label>
+                            <input type="number" id="taxi-km" class="w-full bg-journal-bg border border-journal-line rounded-lg p-3 text-lg font-mono focus:outline-none focus:border-journal-accent" placeholder="例如: 5">
+                        </div>
+                        
+                        <div class="mb-6 flex items-center justify-between">
+                            <span class="text-sm font-bold text-journal-brown">夜間加成 (22:00-05:00)</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="taxi-night" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-journal-ink"></div>
+                            </label>
+                        </div>
+                        
+                        <div class="bg-journal-bg rounded-lg p-4 text-center border-2 border-dashed border-journal-line mb-4">
+                            <p class="text-xs text-journal-brown mb-1">預估車資 (單台)</p>
+                            <p class="text-3xl font-bold text-journal-ink font-mono">¥<span id="taxi-result">0</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="md:w-1/2 md:border-l md:border-journal-line md:pl-8 md:flex md:flex-col md:justify-center">
+                        <div class="text-xs text-gray-500 space-y-1">
+                            <p><i class="fa-solid fa-circle-info mr-1 text-journal-accent"></i>起跳價約 ¥500 (1.0km)，之後每 255m 加 ¥100。</p>
+                            <p class="text-journal-accent font-bold mt-2 pt-2 border-t border-dashed border-gray-300">
+                                <i class="fa-solid fa-people-group mr-1"></i>4大4小提醒：
+                            </p>
+                            <p>一般計程車無法搭乘 8 人，您需要：</p>
+                            <ul class="list-disc list-inside ml-2">
+                                <li>分兩台計程車 (費用 x2)</li>
+                                <li>預約 Jumbo Taxi (大型計程車)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: LISTS (清單) -->
+        <div id="tab-lists" class="tab-content">
+            <h2 class="text-xl font-bold mb-4 text-journal-ink border-b-2 border-journal-ink pb-2 inline-block">檢查清單 Lists</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Checklists -->
+                <div class="bg-white rounded-xl shadow-sm border border-journal-line overflow-hidden mb-6 md:mb-0 h-fit">
+                    <div class="bg-journal-brown/10 p-3 font-bold text-journal-brown text-sm">行前準備</div>
+                    <div class="p-4 space-y-3" id="checklist-container">
+                        <!-- Javascript will handle logic -->
+                        <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="check-passport" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">護照 (檢查效期 > 6個月)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="check-license" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">台灣駕照 + 日文譯本</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="check-insurance" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">旅遊保險 (含不便險)</span>
+                        </label>
+                         <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="check-esim" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">網卡 / eSIM 設定</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="check-vjw" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">Visit Japan Web 登錄</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-journal-line overflow-hidden mb-6 md:mb-0 h-fit">
+                    <div class="bg-journal-green/10 p-3 font-bold text-journal-green text-sm">購買清單</div>
+                    <div class="p-4 space-y-3">
+                        <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="buy-medicine" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">感冒藥/止痛藥 (EVE/合利他命)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="buy-snacks" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">名古屋蝦餅 (坂角総本舖)</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer custom-checkbox">
+                            <input type="checkbox" id="buy-butter" class="hidden">
+                            <div class="w-5 h-5 border-2 border-journal-line rounded flex items-center justify-center transition-colors"></div>
+                            <span class="text-sm select-none">艾許奶油餅乾</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memo -->
+            <div class="bg-yellow-50 rounded-xl shadow-sm border border-yellow-100 p-1 relative mt-6">
+                <div class="absolute top-0 left-0 right-0 h-6 bg-yellow-100/50 rounded-t-xl"></div>
+                <textarea id="memo-area" class="w-full h-40 bg-transparent p-4 pt-8 text-sm leading-relaxed focus:outline-none resize-none" placeholder="點擊此處輸入備忘錄 (自動儲存)..." style="background-image: linear-gradient(#e5e7eb 1px, transparent 1px); background-size: 100% 2rem; line-height: 2rem;"></textarea>
+            </div>
+        </div>
+
+    </main>
+    
+    <!-- Map Modal -->
+    <div id="map-modal" class="modal-overlay">
+        <div class="modal-content bg-white w-full max-w-lg md:max-w-2xl mx-4 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="bg-journal-ink text-white p-4 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold" id="modal-title">Day X 路線地圖</h3>
+                    <p class="text-xs opacity-70">確認行程順暢度 Check Route</p>
+                </div>
+                <button onclick="closeMapModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-0 overflow-y-auto flex-1 bg-journal-bg">
+                <!-- Route List -->
+                <div class="p-5 border-b border-journal-line bg-white">
+                    <h4 class="text-sm font-bold text-journal-brown mb-3 uppercase tracking-widest"><i class="fa-solid fa-list-ol mr-2"></i>當日景點順序</h4>
+                    <div id="modal-route-list" class="space-y-3 relative pl-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Google Maps Link Button -->
+                <div class="p-5 text-center">
+                    <a id="modal-maps-link" href="#" target="_blank" class="block w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg transition-transform transform active:scale-95 flex items-center justify-center">
+                        <i class="fa-solid fa-location-arrow text-xl mr-2"></i>
+                        開啟 Google Maps 導航
+                    </a>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <i class="fa-solid fa-circle-info mr-1"></i>點擊將開啟 Google Maps App，自動帶入所有景點路線。
+                    </p>
+                </div>
+
+                <!-- Static Map Preview -->
+                <div class="px-5 pb-5">
+                     <h4 class="text-sm font-bold text-journal-brown mb-2 uppercase tracking-widest"><i class="fa-solid fa-map mr-2"></i>區域概覽</h4>
+                    <div class="h-48 bg-gray-200 rounded-xl overflow-hidden shadow-inner map-container">
+                        <iframe id="modal-iframe" src="" class="w-full h-full" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-journal-line pb-safe pt-2 px-6 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50">
+        <!-- Changed max-w-md to max-w-md md:max-w-4xl for responsive width -->
+        <div class="flex justify-between items-center max-w-md md:max-w-4xl mx-auto h-16 pb-2">
+            <button onclick="switchTab('plan', this)" class="nav-item active flex flex-col items-center justify-center w-12 text-journal-brown hover:text-journal-accent">
+                <i class="fa-solid fa-calendar-days text-xl mb-1"></i>
+                <span class="text-[10px]">行程</span>
+            </button>
+            <button onclick="switchTab('guide', this)" class="nav-item flex flex-col items-center justify-center w-12 text-journal-brown hover:text-journal-accent">
+                <i class="fa-solid fa-map-location-dot text-xl mb-1"></i>
+                <span class="text-[10px]">景點</span>
+            </button>
+            <button onclick="switchTab('shops', this)" class="nav-item flex flex-col items-center justify-center w-12 text-journal-brown hover:text-journal-accent">
+                <i class="fa-solid fa-utensils text-xl mb-1"></i>
+                <span class="text-[10px]">好店</span>
+            </button>
+            <button onclick="switchTab('info', this)" class="nav-item flex flex-col items-center justify-center w-12 text-journal-brown hover:text-journal-accent">
+                <i class="fa-solid fa-circle-info text-xl mb-1"></i>
+                <span class="text-[10px]">資訊</span>
+            </button>
+             <button onclick="switchTab('taxi', this)" class="nav-item flex flex-col items-center justify-center w-12 text-journal-brown hover:text-journal-accent">
+                <i class="fa-solid fa-taxi text-xl mb-1"></i>
+                <span class="text-[10px]">車資</span>
+            </button>
+            <button onclick="switchTab('lists', this)" class="nav-item flex flex-col items-center justify-center w-12 text-journal-brown hover:text-journal-accent">
+                <i class="fa-solid fa-list-check text-xl mb-1"></i>
+                <span class="text-[10px]">清單</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Data for Routes
+        const dayRoutes = [
+            {
+                title: "Day 1 (1/23)",
+                spots: ["Nagoya Station", "Starbucks Coffee JR Gate Tower", "ÉCHIRÉ PATISSERIE AU BEURRE", "Nagoya Station"],
+                displayNames: ["抵達名古屋車站", "JR Gate Tower 星巴克", "高島屋 ÉCHIRÉ 艾許奶油", "名古屋車站周邊晚餐"],
+                center: "Nagoya Station"
+            },
+            {
+                title: "Day 2 (1/24)",
+                spots: ["Pokemon Center Nagoya", "Yabaton", "Oasis 21", "Sakae"],
+                displayNames: ["Pokemon Center Nagoya", "矢場丼味噌豬排", "Oasis 21 / 榮商圈", "市區自由活動"],
+                center: "Pokemon Center Nagoya"
+            },
+            {
+                title: "Day 3 (1/25)",
+                spots: ["Nagoya Station", "Inuyama Castle", "Sanko Inari Shrine", "Inuyama Castle Town", "Nagoya Station"],
+                displayNames: ["名古屋車站 (出發)", "犬山城 (國寶)", "三光稻荷神社", "犬山城下町", "返回名古屋"],
+                center: "Inuyama Castle"
+            },
+            {
+                title: "Day 4 (1/26)",
+                spots: ["Nagoya Station", "Rokkaen", "Kuwana Castle Ruins", "Nabana no Sato", "Kuwana Station"],
+                displayNames: ["名古屋取車", "六華苑 (洋館)", "桑名城跡 (九華公園)", "名花之里 (燈海/溫室)", "桑名住宿"],
+                center: "Nabana no Sato"
+            },
+            {
+                title: "Day 5 (1/27)",
+                spots: ["Kuwana", "Gozaisho Ropeway", "Tsubaki Grand Shrine", "Aeon Mall Suzuka", "Suzuka"],
+                displayNames: ["桑名出發", "御在所纜車 (樹冰/玩雪)", "椿大神社", "鈴鹿 AEON Mall", "鈴鹿住宿"],
+                center: "Gozaisho Ropeway"
+            },
+            {
+                title: "Day 6 (1/28)",
+                spots: ["Suzuka", "Suzuka Circuit", "Aeon Mall Suzuka"],
+                displayNames: ["鈴鹿出發", "鈴鹿賽道樂園 (Motopia)", "鈴鹿 AEON Mall (補貨)"],
+                center: "Suzuka Circuit"
+            },
+            {
+                title: "Day 7 (1/29)",
+                spots: ["Suzuka", "Suzuka Riverbank Park", "Mitsui Outlet Park Jazz Dream Nagashima", "Nagoya Station"],
+                displayNames: ["鈴鹿出發", "鈴鹿水邊公園/水獺", "三井 Outlet 爵士之夢長島", "返回名古屋還車"],
+                center: "Jazz Dream Nagashima"
+            },
+            {
+                title: "Day 8 (1/30)",
+                spots: ["Sakae", "Osu Shopping District", "Nagoya Station"],
+                displayNames: ["榮商圈", "大須商店街", "名古屋車站 (晚餐)"],
+                center: "Sakae Nagoya"
+            },
+            {
+                title: "Day 9 (1/31)",
+                spots: ["Nagoya Station", "Chubu Centrair International Airport"],
+                displayNames: ["名古屋車站", "中部國際機場 (Flight of Dreams)"],
+                center: "Chubu Centrair International Airport"
+            }
+        ];
+
+        // 1. Tab Switching Logic
+        function switchTab(tabId, btnElement) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Show target content
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            // Update Nav Buttons
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            btnElement.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // New Function: Day Switching logic for Plan (Updated for Scrolling)
+        function switchDay(dayIndex, btnElement) {
+            // 1. Reset all Buttons
+            document.querySelectorAll('.day-nav-btn').forEach(btn => {
+                // Remove active styles
+                btn.classList.remove('bg-journal-ink', 'text-white', 'shadow-md');
+                // Add inactive styles
+                btn.classList.add('bg-white', 'text-journal-brown');
+            });
+
+            // 2. Set Active Button
+            btnElement.classList.remove('bg-white', 'text-journal-brown');
+            btnElement.classList.add('bg-journal-ink', 'text-white', 'shadow-md');
+
+            // 3. Center the button in the scroll view
+            btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+            // 4. Scroll to Content (with Offset for sticky headers)
+            const targetId = 'day-content-' + dayIndex;
+            const element = document.getElementById(targetId);
+            
+            if (element) {
+                // Sticky Header (approx 68px) + Date Nav (approx 100px) + Padding
+                const headerOffset = 180; 
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }
+
+        // 2. Taxi Calculator Logic
+        const taxiKm = document.getElementById('taxi-km');
+        const taxiNight = document.getElementById('taxi-night');
+        const taxiResult = document.getElementById('taxi-result');
+
+        function calculateTaxi() {
+            let km = parseFloat(taxiKm.value) || 0;
+            if (km <= 0) {
+                taxiResult.innerText = "0";
+                return;
+            }
+
+            // Nagoya Approx Rates (Simplified)
+            // Base: 500 yen for 1.059km
+            // Add: 100 yen for every 255m
+            let fare = 500;
+            if (km > 1.059) {
+                let extraDist = (km - 1.059) * 1000; // meters
+                let chunks = Math.ceil(extraDist / 255);
+                fare += chunks * 100;
+            }
+
+            // Night Surcharge (20%)
+            if (taxiNight.checked) {
+                fare = Math.ceil(fare * 1.2);
+            }
+
+            taxiResult.innerText = fare.toLocaleString();
+        }
+
+        taxiKm.addEventListener('input', calculateTaxi);
+        taxiNight.addEventListener('change', calculateTaxi);
+
+
+        // 3. LocalStorage Logic (Lists & Memo)
+        
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Restore Checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(box => {
+                if (box.id) {
+                    const savedState = localStorage.getItem(box.id);
+                    if (savedState === 'true') {
+                        box.checked = true;
+                    }
+                }
+                // Add Listener
+                box.addEventListener('change', function() {
+                    if (this.id) {
+                        localStorage.setItem(this.id, this.checked);
+                    }
+                    if(this.id === 'taxi-night') calculateTaxi(); // Trigger taxi calc if it's that one
+                });
+            });
+
+            // Restore Memo
+            const memoArea = document.getElementById('memo-area');
+            const savedMemo = localStorage.getItem('travel_memo');
+            if (savedMemo) {
+                memoArea.value = savedMemo;
+            }
+            
+            memoArea.addEventListener('input', function() {
+                localStorage.setItem('travel_memo', this.value);
+            });
+        });
+
+        // 4. Map Modal Logic
+        const mapModal = document.getElementById('map-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalRouteList = document.getElementById('modal-route-list');
+        const modalMapsLink = document.getElementById('modal-maps-link');
+        const modalIframe = document.getElementById('modal-iframe');
+
+        function openMapModal(dayIndex) {
+            const data = dayRoutes[dayIndex];
+            
+            // Set Title
+            modalTitle.innerText = data.title;
+            
+            // Set Route List (Timeline Style)
+            let listHtml = '<div class="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gray-200"></div>';
+            data.displayNames.forEach((name, index) => {
+                listHtml += `
+                <div class="flex items-center relative z-10">
+                    <div class="w-10 flex justify-center">
+                        <div class="w-6 h-6 rounded-full ${index === 0 ? 'bg-journal-ink text-white' : (index === data.displayNames.length - 1 ? 'bg-journal-ink text-white' : 'bg-white border-2 border-journal-ink')} flex items-center justify-center text-xs font-bold shadow-sm">
+                            ${index + 1}
+                        </div>
+                    </div>
+                    <div class="ml-2 py-2 text-sm font-medium text-gray-700">
+                        ${name}
+                    </div>
+                </div>`;
+            });
+            modalRouteList.innerHTML = listHtml;
+
+            // Set Google Maps Link
+            // Format: https://www.google.com/maps/dir/Origin/Waypoint1/Waypoint2/Destination
+            const baseUrl = "https://www.google.com/maps/dir/";
+            const routePath = data.spots.map(spot => encodeURIComponent(spot)).join("/");
+            modalMapsLink.href = baseUrl + routePath;
+
+            // Set Iframe (Static Center)
+            modalIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(data.center)}&output=embed`;
+
+            // Open Modal
+            mapModal.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeMapModal() {
+            mapModal.classList.remove('open');
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Close when clicking outside content
+        mapModal.addEventListener('click', (e) => {
+            if (e.target === mapModal) {
+                closeMapModal();
+            }
+        });
+    </script>
+</body>
+</html>
